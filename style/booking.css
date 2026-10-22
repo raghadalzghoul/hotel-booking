@@ -50,3 +50,70 @@
     color: #c5a46d;
     font-weight: 600;
 }
+
+
+/* Booking Form */
+
+.booking-container form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+
+    background: white;
+    padding: 30px;
+    border-radius: 14px;
+    margin-top: 25px;
+
+    box-shadow: 0 8px 25px rgba(20, 40, 63, 0.08);
+}
+
+.booking-container form label {
+    display: block;
+    font-weight: 600;
+    color: #14283f;
+}
+
+.booking-container form input,
+.booking-container form select {
+    display: block;
+    width: 100%;
+    padding: 13px;
+    border: 1px solid #dce2e8;
+    border-radius: 8px;
+    font-size: 15px;
+    box-sizing: border-box;
+}
+
+.booking-container form button {
+    display: block;
+    width: 100%;
+    padding: 14px;
+    background: #14283f;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.booking-container form button:hover {
+    background: #233e5c;
+}
+
+.booking-success {
+    background: white;
+    padding: 30px;
+    border-radius: 14px;
+    border-left: 5px solid #c5a46d;
+    box-shadow: 0 8px 25px rgba(20, 40, 63, 0.08);
+    margin-bottom: 25px;
+}
+
+.booking-success h3 {
+    color: #14283f;
+    font-size: 24px;
+    margin: 15px 0;
+}
+
+

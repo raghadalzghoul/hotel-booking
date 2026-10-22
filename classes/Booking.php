@@ -1,72 +1,216 @@
 
 <?php
 
-require_once __DIR__ . "/classes/Session.php";
+require_once __DIR__ . "/Database.php";
 
-$sessionObj = new Session();
+class Booking
+{
+    private $conn;
 
-$facilityId = filter_input(INPUT_GET, "facility_id", FILTER_VALIDATE_INT);
+    public function __construct()
+    {
+        $database = new Database();
+        $this->conn = $database->connect();
+    }
 
-if (!$facilityId || $facilityId < 1) {
-    die("Invalid facility.");
+    public function createBooking($sessionId, $guestName, $guestEmail)
+    {
+        try {
+            // Start transaction
+            $this->conn->beginTransaction();
+
+            // Get session capacity and lock the session
+            $sql = "SELECT s.id, f.capacity
+                    FROM sessions s
+                    JOIN facilities f ON s.facility_id = f.id
+                    WHERE s.id = :session_id
+                    AND (
+                        s.session_date > CURDATE()
+                        OR (
+                            s.session_date = CURDATE()
+                            AND s.start_time > CURTIME()
+                        )
+                    )
+                    FOR UPDATE";
+
+            $stmt = $this->conn->prepare($sql);
+
+            $stmt->execute([
+                "session_id" => $sessionId
+            ]);
+
+            $session = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            if (!$session) {
+                $this->conn->rollBack();
+
+                return [
+                    "success" => false,
+                    "message" => "Session not found or already started."
+                ];
+            }
+
+            // Count confirmed bookings
+            $sql = "SELECT COUNT(*) FROM bookings
+                    WHERE session_id = :session_id
+                    AND status = 'confirmed'";
+
+            $stmt = $this->conn->prepare($sql);
+
+            $stmt->execute([
+                "session_id" => $sessionId
+            ]);
+
+            $bookedCount = (int) $stmt->fetchColumn();
+
+            // Check capacity
+            if ($bookedCount >= (int) $session["capacity"]) {
+                $this->conn->rollBack();
+
+                return [
+                    "success" => false,
+                    "message" => "This session is fully booked."
+                ];
+            }
+
+            // Generate booking reference
+            $reference = strtoupper(bin2hex(random_bytes(6)));
+
+            // Save booking
+            $sql = "INSERT INTO bookings
+                    (session_id, guest_name, guest_email,
+                     booking_reference, status)
+                    VALUES
+                    (:session_id, :guest_name, :guest_email,
+                     :reference, 'confirmed')";
+
+            $stmt = $this->conn->prepare($sql);
+
+            $stmt->execute([
+                "session_id" => $sessionId,
+                "guest_name" => $guestName,
+                "guest_email" => $guestEmail,
+                "reference" => $reference
+            ]);
+
+            // Save transaction
+            $this->conn->commit();
+
+            return [
+                "success" => true,
+                "reference" => $reference
+            ];
+
+        } catch (Exception $e) {
+
+            if ($this->conn->inTransaction()) {
+                $this->conn->rollBack();
+            }
+
+            error_log($e->getMessage());
+
+            return [
+                "success" => false,
+                "message" => "Booking failed. Please try again."
+            ];
+        }
+    }
+
+
+
+
+
+
+
+
+
+    
+public function getBooking($reference, $email)
+{
+    $sql = "SELECT
+                b.id,
+                b.guest_name,
+                b.guest_email,
+                b.booking_reference,
+                b.status,
+                f.name AS facility_name,
+                s.session_date,
+                s.start_time,
+                s.end_time
+            FROM bookings b
+            JOIN sessions s ON b.session_id = s.id
+            JOIN facilities f ON s.facility_id = f.id
+            WHERE b.booking_reference = :reference
+            AND b.guest_email = :email";
+
+    $stmt = $this->conn->prepare($sql);
+
+    $stmt->execute([
+        "reference" => $reference,
+        "email" => $email
+    ]);
+
+    return $stmt->fetch(PDO::FETCH_ASSOC);
 }
 
-$sessions = $sessionObj->getSessionsByFacility($facilityId);
 
-?>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Book Facility</title>
 
-    <link rel="stylesheet" href="style/global.css">
-    <link rel="stylesheet" href="style/booking.css">
-</head>
-<body>
 
-    <main class="booking-container">
 
-        <h1>Available Sessions</h1>
-        <p>Select a date and time for your booking.</p>
 
-        <?php if (empty($sessions)): ?>
 
-            <p>No upcoming sessions available.</p>
 
-        <?php else: ?>
+public function cancelBooking($reference, $email)
+{
+    $sql = "UPDATE bookings
+            SET status = 'cancelled'
+            WHERE booking_reference = :reference
+            AND guest_email = :email
+            AND status = 'confirmed'";
 
-            <?php foreach ($sessions as $session): ?>
+    $stmt = $this->conn->prepare($sql);
 
-                <div class="session-card">
+    $stmt->execute([
+        "reference" => $reference,
+        "email" => $email
+    ]);
 
-                    <h3>
-                        <?= htmlspecialchars($session["session_date"]) ?>
-                    </h3>
+    return $stmt->rowCount() > 0;
+}
 
-                    <p>
-                        Time:
-                        <?= htmlspecialchars($session["start_time"]) ?>
-                        -
-                        <?= htmlspecialchars($session["end_time"]) ?>
-                    </p>
 
-                    <button type="button">
-                        Select Session
-                    </button>
 
-                </div>
 
-            <?php endforeach; ?>
 
-        <?php endif; ?>
 
-        <a href="facilities.php">Back to Facilities</a>
 
-    </main>
 
-</body>
-</html>
+
+
+
+public function getAllBookings()
+{
+    $sql = "SELECT
+                b.id,
+                b.guest_name,
+                b.guest_email,
+                b.booking_reference,
+                b.status,
+                f.name AS facility_name,
+                s.session_date,
+                s.start_time,
+                s.end_time
+            FROM bookings b
+            JOIN sessions s ON b.session_id = s.id
+            JOIN facilities f ON s.facility_id = f.id
+            ORDER BY s.session_date DESC, s.start_time DESC";
+
+    $stmt = $this->conn->prepare($sql);
+    $stmt->execute();
+
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+}
