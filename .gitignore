@@ -1,0 +1,4 @@
+test_connection.php
+.env
+/vendor/
+.vscode/
