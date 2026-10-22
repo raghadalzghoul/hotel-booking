@@ -1,0 +1,39 @@
+
+body {
+    min-height: 100vh;
+    padding: 60px 24px;
+}
+
+.dashboard-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    background: white;
+    border-radius: 16px;
+    padding: 48px;
+    box-shadow: 0 12px 40px rgba(20, 40, 63, 0.07);
+}
+
+.dashboard-container h1 {
+    color: var(--navy);
+    font-size: 32px;
+    margin-bottom: 12px;
+}
+
+.dashboard-container p {
+    color: var(--muted);
+    margin-bottom: 24px;
+}
+
+.logout-btn {
+    display: inline-block;
+    background: var(--navy);
+    color: white;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 600;
+}
+
+.logout-btn:hover {
+    background: #233e5c;
+    color: white;
+}
