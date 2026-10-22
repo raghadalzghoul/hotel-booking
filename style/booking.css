@@ -1,0 +1,52 @@
+
+.booking-container {
+    max-width: 850px;
+    margin: 70px auto;
+    padding: 30px;
+}
+
+.booking-container h1 {
+    color: #14283f;
+    margin-bottom: 10px;
+}
+
+.booking-container > p {
+    color: #748092;
+    margin-bottom: 30px;
+}
+
+.session-card {
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    box-shadow: 0 8px 25px rgba(20, 40, 63, 0.08);
+}
+
+.session-card h3 {
+    color: #14283f;
+    margin-bottom: 10px;
+}
+
+.session-card p {
+    margin-bottom: 15px;
+}
+
+.session-card button {
+    background: #14283f;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 8px;
+}
+
+.session-card button:hover {
+    background: #233e5c;
+}
+
+.booking-container > a {
+    display: inline-block;
+    margin-top: 20px;
+    color: #c5a46d;
+    font-weight: 600;
+}
