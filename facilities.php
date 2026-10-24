@@ -16,10 +16,11 @@ $facilities = $facilityObj->getAllFacilities();
 
     <title>Hotel Facilities</title>
 
-    <link rel="stylesheet" href="style/global.css">
+   <link rel="stylesheet" href="style/global.css?v=2">
     <link rel="stylesheet" href="style/facilities.css">
 </head>
 <body>
+    <?php include __DIR__ . "/includes/header.php"; ?>
 
     <header class="page-header">
         <h1>Our Facilities</h1>
@@ -32,21 +33,20 @@ $facilities = $facilityObj->getAllFacilities();
 
             <div class="facility-card">
 
-            <?php
-$images = [
-    "Swimming Pool" => "pool.jpg",
-    "Spa" => "spa.jpg",
-    "Fitness Center" => "fitness.jpg"
-];
 
-$image = $images[$facility["name"]] ?? "pool.jpg";
-?>
 
-<img
-    src="assets/images/<?= htmlspecialchars($image, ENT_QUOTES, 'UTF-8') ?>"
-    alt="<?= htmlspecialchars($facility["name"], ENT_QUOTES, 'UTF-8') ?>"
-    class="facility-image"
->
+
+<?php if (!empty($facility["image_url"])): ?>
+
+    <img
+        src="<?= htmlspecialchars($facility["image_url"], ENT_QUOTES, 'UTF-8') ?>"
+        alt="<?= htmlspecialchars($facility["name"], ENT_QUOTES, 'UTF-8') ?>"
+        class="facility-image"
+        loading="lazy"
+    >
+
+<?php endif; ?>
+
 
                 <div class="facility-info">
 
@@ -76,6 +76,6 @@ $image = $images[$facility["name"]] ?? "pool.jpg";
         <?php endforeach; ?>
 
     </main>
-
+   <?php include __DIR__ . "/includes/footer.php"; ?>
 </body>
 </html>

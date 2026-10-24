@@ -1,0 +1,144 @@
+
+/* CONTACT HERO */
+
+.contact-hero {
+    background: linear-gradient(135deg, #14283f, #284c63);
+    color: white;
+    text-align: center;
+    padding: 95px 20px;
+}
+
+.contact-label {
+    color: #c5a46d;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    margin-bottom: 15px;
+}
+
+.contact-hero h1 {
+    font-size: clamp(36px, 5vw, 58px);
+    margin-bottom: 18px;
+}
+
+.contact-hero > p:last-child {
+    max-width: 650px;
+    margin: auto;
+    color: #e1e8ee;
+    font-size: 17px;
+}
+
+/* CONTACT CONTENT */
+
+.contact-section {
+    max-width: 1150px;
+    margin: auto;
+    padding: 90px 25px;
+    display: grid;
+    grid-template-columns: 1fr 1.2fr;
+    gap: 65px;
+    align-items: start;
+}
+
+.contact-intro h2 {
+    color: #14283f;
+    font-size: 36px;
+    margin-bottom: 20px;
+}
+
+.contact-intro > p:not(.contact-label) {
+    color: #748092;
+    line-height: 1.9;
+    margin-bottom: 25px;
+}
+
+.contact-link {
+    color: #b18a57;
+    font-weight: 700;
+}
+
+/* FORM */
+
+.contact-form-card {
+    background: white;
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 10px 35px rgba(0, 0, 0, 0.07);
+}
+
+.contact-form-card h2 {
+    color: #14283f;
+    font-size: 27px;
+    margin-bottom: 25px;
+}
+
+.contact-form-card form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.contact-form-card label {
+    color: #263548;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.contact-form-card input,
+.contact-form-card textarea {
+    width: 100%;
+    padding: 13px 15px;
+    border: 1px solid #d9dfe5;
+    border-radius: 6px;
+    font: inherit;
+    background: #ffffff;
+    color: #263548;
+}
+
+.contact-form-card input:focus,
+.contact-form-card textarea:focus {
+    outline: none;
+    border-color: #c5a46d;
+}
+
+.contact-submit {
+    background: #c5a46d;
+    color: white;
+    border: none;
+    padding: 15px;
+    border-radius: 6px;
+    font-weight: 700;
+    margin-top: 12px;
+}
+
+.contact-submit:hover {
+    background: #aa824c;
+}
+
+.error-message {
+    color: #a92727;
+    margin-bottom: 15px;
+}
+
+.success-message {
+    color: #237a4b;
+    margin-bottom: 15px;
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 768px) {
+    .contact-section {
+        grid-template-columns: 1fr;
+        gap: 35px;
+        padding: 60px 20px;
+    }
+
+    .contact-intro h2 {
+        font-size: 30px;
+    }
+
+    .contact-form-card {
+        padding: 25px;
+    }
+}

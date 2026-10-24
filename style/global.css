@@ -40,3 +40,99 @@ input {
 button {
     cursor: pointer;
 }
+
+
+/* =========================
+   SHARED NAVBAR
+========================= */
+
+.site-header {
+    background: #ffffff;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.06);
+}
+
+.navbar {
+    max-width: 1200px;
+    margin: auto;
+    min-height: 85px;
+    padding: 15px 25px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.logo {
+    font-size: 26px;
+    font-weight: 700;
+    color: #173b50;
+    text-decoration: none;
+}
+
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+}
+
+.nav-links a {
+    color: #34495e;
+    font-size: 15px;
+    font-weight: 500;
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.nav-links a:hover {
+    color: #b9925e;
+}
+
+/* =========================
+   SHARED FOOTER
+========================= */
+
+.site-footer {
+    background: #142d3e;
+    color: #ffffff;
+    padding: 55px 20px;
+    text-align: center;
+}
+
+.site-footer h3 {
+    font-size: 26px;
+    margin: 0 0 15px;
+    color: #ffffff;
+}
+
+.site-footer p {
+    color: #c3ccd3;
+    font-size: 14px;
+    line-height: 1.8;
+}
+
+/* =========================
+   RESPONSIVE NAVBAR
+========================= */
+
+@media (max-width: 650px) {
+
+    .navbar {
+        flex-direction: column;
+        gap: 15px;
+        padding: 20px;
+    }
+
+    .nav-links {
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 12px 20px;
+    }
+
+    .nav-links a {
+        font-size: 14px;
+    }
+}

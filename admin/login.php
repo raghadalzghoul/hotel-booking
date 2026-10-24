@@ -66,7 +66,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         </p>
     <?php endif; ?>
 
-    <form method="POST" action="login.php">
+    <form method="POST" enctype="multipart/form-data" action="login.php">
 
         <label for="email">Email</label>
         <input

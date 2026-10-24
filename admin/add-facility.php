@@ -1,5 +1,6 @@
 
 <?php
+require_once __DIR__ . "/../classes/CloudinaryUploader.php";
 
 session_start();
 
@@ -30,14 +31,25 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $name = trim($_POST["name"] ?? "");
     $description = trim($_POST["description"] ?? "");
     $capacity = filter_input(INPUT_POST, "capacity", FILTER_VALIDATE_INT);
-    $imageUrl = trim($_POST["image_url"] ?? "");
+  
 
     if ($name === "" || !$capacity || $capacity < 1) {
 
         $error = "Please enter a facility name and valid capacity.";
 
-    } else {
 
+} else {
+
+    try {
+
+        // Upload image to Cloudinary
+        $uploader = new CloudinaryUploader();
+
+        $imageUrl = $uploader->uploadImage(
+            $_FILES["image"] ?? []
+        );
+
+        // Save facility in MySQL
         $added = $facilityObj->addFacility(
             $name,
             $description,
@@ -46,12 +58,23 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         );
 
         if ($added) {
+
+            $_SESSION["facility_message"] = "Facility added successfully.";
+
             header("Location: facilities.php");
             exit;
         }
 
         $error = "Unable to add facility.";
+
+    } catch (Exception $e) {
+
+        error_log($e->getMessage());
+
+        $error = "Unable to upload image or add facility.";
     }
+}
+
 }
 
 ?>
@@ -79,7 +102,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         </p>
     <?php endif; ?>
 
-    <form method="POST" class="facility-form">
+    <form method="POST" enctype="multipart/form-data" class="facility-form">
 
         <input
             type="hidden"
@@ -95,14 +118,15 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
         <label for="capacity">Capacity</label>
         <input type="number" name="capacity" id="capacity" min="1" required>
+<label for="image">Facility Image</label>
 
-        <label for="image_url">Image Path (optional)</label>
-        <input
-            type="text"
-            name="image_url"
-            id="image_url"
-            placeholder="assets/images/sauna.jpg"
-        >
+<input
+    type="file"
+    name="image"
+    id="image"
+    accept="image/jpeg,image/png,image/webp"
+    required
+>
 
         <button type="submit" class="save-btn">
             Add Facility

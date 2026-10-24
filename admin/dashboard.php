@@ -3,7 +3,7 @@
 
 session_start();
 
-require_once __DIR__ . "/../classes/Booking.php";
+require_once __DIR__ . "/../classes/Database.php";
 
 // Protect admin dashboard
 if (!isset($_SESSION["admin_id"])) {
@@ -11,204 +11,162 @@ if (!isset($_SESSION["admin_id"])) {
     exit;
 }
 
+// Connect to database
+$database = new Database();
+$conn = $database->connect();
 
-$bookingObj = new Booking();
+// Get dashboard statistics
+$totalFacilities = (int) $conn
+    ->query("SELECT COUNT(*) FROM facilities")
+    ->fetchColumn();
 
-// Create a CSRF token for admin actions
-if (empty($_SESSION["csrf_token"])) {
-    $_SESSION["csrf_token"] = bin2hex(random_bytes(32));
-}
+$totalSessions = (int) $conn
+    ->query("SELECT COUNT(*) FROM sessions")
+    ->fetchColumn();
 
-// Handle admin cancellation
-if ($_SERVER["REQUEST_METHOD"] === "POST") {
+$totalBookings = (int) $conn
+    ->query("SELECT COUNT(*) FROM bookings")
+    ->fetchColumn();
 
-    $token = $_POST["csrf_token"] ?? "";
-
-    if (!hash_equals($_SESSION["csrf_token"], $token)) {
-        http_response_code(403);
-        die("Invalid request.");
-    }
-
-    $bookingId = filter_input(
-        INPUT_POST,
-        "booking_id",
-        FILTER_VALIDATE_INT
-    );
-
-    if ($bookingId && $bookingId > 0) {
-        $bookingObj->cancelBookingByAdmin($bookingId);
-    }
-
-    header("Location: dashboard.php");
-    exit;
-}
-
-$bookings = $bookingObj->getAllBookings();
-
+$totalMessages = (int) $conn
+    ->query("SELECT COUNT(*) FROM contact_messages")
+    ->fetchColumn();
 
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Admin Dashboard</title>
+    <title>Admin Dashboard | Grand Haven Hotel</title>
 
-    <link rel="stylesheet" href="../style/global.css">
-    <link rel="stylesheet" href="../style/admin.css">
+    <link rel="stylesheet" href="../style/global.css?v=3">
+    <link rel="stylesheet" href="../style/admin.css?v=5">
 </head>
+
 <body>
 
-<main class="admin-container">
+<div class="admin-layout">
 
-    <div class="admin-header">
+    <!-- ADMIN SIDEBAR -->
+    <?php include __DIR__ . "/includes/sidebar.php"; ?>
 
-        <div>
-            <h1>Admin Dashboard</h1>
+    <!-- MAIN CONTENT -->
+    <main class="admin-main">
 
-            <p>
-                Welcome,
-                <?= htmlspecialchars($_SESSION["admin_name"] ?? "Admin", ENT_QUOTES, 'UTF-8') ?>
-            </p>
-        </div>
-       
-<div class="admin-actions">
-    <a href="facilities.php" class="logout-btn">
-        Manage Facilities
-    </a>
+        <div class="admin-container">
 
-    <a href="logout.php" class="logout-btn">
-        Logout
-    </a>
-</div>
+            <!-- DASHBOARD HEADER -->
+            <div class="admin-header">
 
-    </div>
+                <div>
+                    <h1>Admin Dashboard</h1>
 
-    <section class="bookings-section">
-
-        <h2>All Bookings</h2>
-
-        <?php if (empty($bookings)): ?>
-
-            <p>No bookings found.</p>
-
-        <?php else: ?>
-
-            <div class="table-wrapper">
-
-                <table>
-
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Guest Name</th>
-                            <th>Email</th>
-                            <th>Facility</th>
-                            <th>Date</th>
-                            <th>Time</th>
-                            <th>Reference</th>
-                            <th>Status</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-
-                    <tbody>
-
-                        <?php foreach ($bookings as $booking): ?>
-
-                            <tr>
-
-                                <td>
-                                    <?= (int)$booking["id"] ?>
-                                </td>
-
-                                <td>
-                                    <?= htmlspecialchars($booking["guest_name"], ENT_QUOTES, 'UTF-8') ?>
-                                </td>
-
-                                <td>
-                                    <?= htmlspecialchars($booking["guest_email"], ENT_QUOTES, 'UTF-8') ?>
-                                </td>
-
-                                <td>
-                                    <?= htmlspecialchars($booking["facility_name"], ENT_QUOTES, 'UTF-8') ?>
-                                </td>
-
-                                <td>
-                                    <?= htmlspecialchars($booking["session_date"], ENT_QUOTES, 'UTF-8') ?>
-                                </td>
-
-                                <td>
-                                    <?= htmlspecialchars($booking["start_time"], ENT_QUOTES, 'UTF-8') ?>
-                                    -
-                                    <?= htmlspecialchars($booking["end_time"], ENT_QUOTES, 'UTF-8') ?>
-                                </td>
-
-                                <td>
-                                    <?= htmlspecialchars($booking["booking_reference"], ENT_QUOTES, 'UTF-8') ?>
-                                </td>
-
-                                <td>
-                                    <span class="status <?= $booking["status"] === "confirmed" ? "confirmed" : "cancelled" ?>">
-                                        <?= htmlspecialchars(ucfirst($booking["status"]), ENT_QUOTES, 'UTF-8') ?>
-                                    </span>
-                                </td>
-
-                                
-<td>
-
-    <?php if ($booking["status"] === "confirmed"): ?>
-
-        <form
-            method="POST"
-            action="dashboard.php"
-            onsubmit="return confirm('Are you sure you want to cancel this booking?');"
-        >
-
-            <input
-                type="hidden"
-                name="booking_id"
-                value="<?= (int)$booking["id"] ?>"
-            >
-
-            <input
-                type="hidden"
-                name="csrf_token"
-                value="<?= htmlspecialchars($_SESSION["csrf_token"], ENT_QUOTES, 'UTF-8') ?>"
-            >
-
-            <button type="submit" class="cancel-booking-btn">
-                Cancel
-            </button>
-
-        </form>
-
-    <?php else: ?>
-
-        <span class="no-action">—</span>
-
-    <?php endif; ?>
-
-</td>
-
-
-                            </tr>
-
-                        <?php endforeach; ?>
-
-                    </tbody>
-
-                </table>
+                    <p>
+                        Welcome,
+                        <?= htmlspecialchars(
+                            $_SESSION["admin_name"] ?? "Admin",
+                            ENT_QUOTES,
+                            'UTF-8'
+                        ) ?>
+                    </p>
+                </div>
 
             </div>
 
-        <?php endif; ?>
+            <!-- DASHBOARD STATISTICS -->
+            <section class="dashboard-stats">
 
-    </section>
+                <!-- FACILITIES -->
+                <div class="stat-card">
 
-</main>
+                    <div class="stat-icon">🏨</div>
+
+                    <div>
+                        <h3><?= $totalFacilities ?></h3>
+                        <p>Total Facilities</p>
+                    </div>
+
+                </div>
+
+                <!-- SESSIONS -->
+                <div class="stat-card">
+
+                    <div class="stat-icon">📅</div>
+
+                    <div>
+                        <h3><?= $totalSessions ?></h3>
+                        <p>Total Sessions</p>
+                    </div>
+
+                </div>
+
+                <!-- BOOKINGS -->
+                <div class="stat-card">
+
+                    <div class="stat-icon">📋</div>
+
+                    <div>
+                        <h3><?= $totalBookings ?></h3>
+                        <p>Total Bookings</p>
+                    </div>
+
+                </div>
+
+                <!-- MESSAGES -->
+                <div class="stat-card">
+
+                    <div class="stat-icon">✉️</div>
+
+                    <div>
+                        <h3><?= $totalMessages ?></h3>
+                        <p>Guest Messages</p>
+                    </div>
+
+                </div>
+
+            </section>
+
+            <!-- QUICK ACTIONS -->
+            <section class="dashboard-shortcuts">
+
+                <h2>Quick Actions</h2>
+
+                <p class="shortcuts-description">
+                    Manage your hotel facilities, sessions,
+                    guest reservations, and contact messages.
+                </p>
+
+                <div class="shortcuts-links">
+
+                    <a href="facilities.php">
+                        Manage Facilities
+                    </a>
+
+                    <a href="sessions.php">
+                        Manage Sessions
+                    </a>
+
+                    <a href="bookings.php">
+                        Manage Bookings
+                    </a>
+
+                    <a href="messages.php">
+                        View Messages
+                    </a>
+
+                </div>
+
+            </section>
+
+        </div>
+
+    </main>
+
+</div>
 
 </body>
 </html>

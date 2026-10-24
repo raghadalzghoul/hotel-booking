@@ -50,6 +50,31 @@ class Booking
                 ];
             }
 
+
+            
+            // Check if this guest already booked this session
+            $sql = "SELECT COUNT(*) FROM bookings
+                    WHERE session_id = :session_id
+                    AND guest_email = :guest_email
+                    AND status = 'confirmed'";
+
+            $stmt = $this->conn->prepare($sql);
+
+            $stmt->execute([
+                "session_id" => $sessionId,
+                "guest_email" => $guestEmail
+            ]);
+
+            if ((int) $stmt->fetchColumn() > 0) {
+
+                $this->conn->rollBack();
+
+                return [
+                    "success" => false,
+                    "message" => "You already have a booking for this session."
+                ];
+            }
+
             // Count confirmed bookings
             $sql = "SELECT COUNT(*) FROM bookings
                     WHERE session_id = :session_id
@@ -74,7 +99,24 @@ class Booking
             }
 
             // Generate booking reference
-            $reference = strtoupper(bin2hex(random_bytes(6)));
+            
+            // Generate a unique booking reference
+            do {
+                $reference = strtoupper(bin2hex(random_bytes(6)));
+
+                $sql = "SELECT COUNT(*) FROM bookings
+                        WHERE booking_reference = :reference";
+
+                $stmt = $this->conn->prepare($sql);
+
+                $stmt->execute([
+                    "reference" => $reference
+                ]);
+
+                $exists = (int) $stmt->fetchColumn();
+
+            } while ($exists > 0);
+
 
             // Save booking
             $sql = "INSERT INTO bookings

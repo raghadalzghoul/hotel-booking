@@ -2,3 +2,5 @@ test_connection.php
 .env
 /vendor/
 .vscode/
+node_modules/
+.env.*

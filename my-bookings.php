@@ -63,11 +63,13 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
     <title>My Bookings</title>
 
-    <link rel="stylesheet" href="style/global.css">
+    <link rel="stylesheet" href="style/global.css?v=3">
     <link rel="stylesheet" href="style/my-bookings.css">
 
 </head>
 <body>
+
+<?php include __DIR__ . "/includes/header.php"; ?>
 
 <main class="my-bookings-container">
 
@@ -80,7 +82,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
     <!-- Find Booking Form -->
 
-    <form method="POST" action="my-bookings.php">
+    <form method="POST"  action="my-bookings.php">
 
         <input type="hidden" name="action" value="find">
 
@@ -222,6 +224,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     </a>
 
 </main>
-
+<?php include __DIR__ . "/includes/footer.php"; ?>
 </body>
 </html>
