@@ -107,3 +107,143 @@ tbody tr:hover {
         padding: 18px;
     }
 }
+
+
+
+
+.cancel-booking-btn {
+    background: #b42318;
+    color: white;
+    border: none;
+    padding: 9px 16px;
+    border-radius: 7px;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.cancel-booking-btn:hover {
+    background: #8f1c13;
+}
+
+.no-action {
+    color: #98a2b3;
+}
+
+.bookings-section td form {
+    margin: 0;
+}
+
+
+.admin-actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.bookings-section td img {
+    border-radius: 8px;
+    object-fit: cover;
+    height: 60px;
+}
+
+
+
+.add-facility-btn,
+.save-btn {
+    display: inline-block;
+    background: #14283f;
+    color: white;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 8px;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.add-facility-btn {
+    margin-bottom: 20px;
+}
+
+.facility-form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    background: white;
+    padding: 30px;
+    border-radius: 14px;
+    margin: 25px 0;
+    max-width: 650px;
+}
+
+.facility-form label {
+    font-weight: 600;
+    color: #14283f;
+}
+
+.facility-form input,
+.facility-form textarea {
+    padding: 12px;
+    border: 1px solid #dce2e8;
+    border-radius: 8px;
+    font: inherit;
+}
+
+.facility-form .save-btn {
+    margin-top: 10px;
+}
+
+.error-message {
+    color: #b42318;
+    margin: 15px 0;
+}
+
+
+
+.edit-btn {
+    display: inline-block;
+    background: #c5a46d;
+    color: #14283f;
+    padding: 9px 16px;
+    border-radius: 7px;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.edit-btn:hover {
+    background: #b69357;
+}
+
+
+
+
+.facility-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.facility-actions form {
+    margin: 0;
+}
+
+.delete-btn {
+    background: #b42318;
+    color: white;
+    border: none;
+    padding: 9px 16px;
+    border-radius: 7px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.delete-btn:hover {
+    background: #8f1c13;
+}
+
+.facility-message {
+    background: #eef2f7;
+    color: #14283f;
+    padding: 14px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}

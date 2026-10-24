@@ -213,4 +213,27 @@ public function getAllBookings()
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
+
+
+
+
+public function cancelBookingByAdmin($bookingId)
+{
+    $sql = "UPDATE bookings
+            SET status = 'cancelled'
+            WHERE id = :id
+            AND status = 'confirmed'";
+
+    $stmt = $this->conn->prepare($sql);
+
+    $stmt->execute([
+        "id" => $bookingId
+    ]);
+
+    return $stmt->rowCount() > 0;
+}
+
+
+
+
 }
